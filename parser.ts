@@ -15,7 +15,14 @@ enum Precedence {
   PREFIX,
   CALL,
 }
-
+// Parenthesis has the lowest precedence. This will stop the recursive step when peekToken is token.RPAREN.
+// A + B * C
+// With this expression, we create an infix expression with A being the left value and + being the operator.
+// Because + has a lower precedence than *, we continue on with the recursive step, going deeper into the 
+// expression. So, instead the first infix's right value being B, we call parseExpression again, creating a
+// IntExpression, and then the for loop creates a new infix expression for the * operator that consumes the 
+// the left statement which is B. Once we create the second infix operator: L: B, R: C, Op: *, we return
+// the infix operator which will be consumed by the first infix expression.
 const precedences = new Map<token.TokenType, Precedence>([
   [token.PLUS, Precedence.SUM],
   [token.MINUS, Precedence.SUM],
@@ -52,6 +59,8 @@ export function createParser(lexer: Lexer) {
     infixParseFnMap.set(token.MINUS, parseInfixExpression);
     infixParseFnMap.set(token.ASTERISK, parseInfixExpression);
     infixParseFnMap.set(token.SLASH, parseInfixExpression);
+
+    prefixParseFnMap.set(token.LPAREN, parseGroupExpression);
   }
 
   function parseProgram(): Program {
@@ -200,6 +209,22 @@ export function createParser(lexer: Lexer) {
     if (!right) { return null; }
     stmt.right = right;
     return stmt;
+  }
+
+  function parseGroupExpression(): ExpressionNode | null {
+    // ( A + B )
+    //   c p
+    nextToken();
+
+    let exprs = parseExpression(Precedence.LOWEST);
+
+    if (!exprs) { return null; }
+
+    if (!expectPeek(token.RPAREN)) {
+      return null;
+    }
+
+    return exprs; 
   }
 
   function expectPeek(type: token.TokenType): boolean  {

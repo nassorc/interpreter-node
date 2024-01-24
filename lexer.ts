@@ -33,6 +33,18 @@ export function createLexer(config: { input: string }){
       case "=":
         tk = newToken(token.ASSIGN, state.ch);
         break;
+      case "(":
+        tk = newToken(token.LPAREN, state.ch);
+        break;
+      case ")":
+        tk = newToken(token.RPAREN, state.ch);
+        break;
+      case "{":
+        tk = newToken(token.LBRACE, state.ch);
+        break;
+      case "}":
+        tk = newToken(token.RBRACE, state.ch);
+        break;
       case ";":
         tk = newToken(token.SEMICOLON, state.ch);
         break;

@@ -28,9 +28,10 @@ import { StatementNode, LetStatement } from "./ast";
 // console.log(parser.state.errors);
 
 // console.log("state: ", parser.state)
-
+const infix1 = `-5 + 10 * 15;`;
+const infix2 = `(3 + 2) * 1`;
 const lexer = createLexer({ 
-  input: `-5 + 10 * 15;` 
+  input: infix1
 });
 
 // let tk = lexer.nextToken();
@@ -42,6 +43,5 @@ const lexer = createLexer({
 
 const parser = createParser(lexer);
 const program = parser.parseProgram();
+console.dir(program, { depth: Infinity });
 console.log(program.toString());
-// console.dir(program.statements, { depth: Infinity })
-// console.log(parser.state.errors);
